@@ -9,7 +9,7 @@ services:
       - "8000:8000"
     restart: on-failure
     volumes:
-      - ./taskAPI:/go/src/github.com/JackMaarek/Rehabillitation
+      - ./taskAPI:/go/src/github.com/JackMaarek/Rehabillitation/taskAPI
     depends_on:
       - postgres
     networks:

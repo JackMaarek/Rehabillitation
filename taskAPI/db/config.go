@@ -21,6 +21,7 @@ type Config struct {
 func Init() error {
 	cfg, err := getConfig()
 	if err != nil {
+		log.Fatal("No Database connection found")
 		return err
 	}
 

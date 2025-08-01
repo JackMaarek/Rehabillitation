@@ -18,6 +18,7 @@ func Initialize(r *gin.Engine) {
 	v1 := api.Group("/v1")
 	{
 		v1.GET("/tasks", controllers.GetAllTasks)
+		v1.POST("/task", controllers.CreateTask)
 	}
 
 }
@@ -33,5 +34,6 @@ func Run(r *gin.Engine) {
 	// ----------------- CLOSE APP -----------------
 	quit := make(chan os.Signal, 2)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
 	log.Info("Shutting down server...")
 }

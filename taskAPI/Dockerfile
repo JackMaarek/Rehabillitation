@@ -1,30 +1,30 @@
 FROM golang:1.24-alpine
 
-# ----- SETUP -----
-
 # Enable Go modules
 ENV GO111MODULE=on
 
-# Set the current working with go absolute path
-WORKDIR /go/src/github.com/JackMaarek/Rehabillitation
+# Explicit go bin path for binaries
+ENV GOBIN=/go/bin
+ENV PATH="${GOBIN}:${PATH}"
 
-# ----- INSTALL -----
+# Set the working directory
+WORKDIR /go/src/github.com/JackMaarek/Rehabillitation/taskAPI
 
-# Copy go.mod + go.sum for install before full copy
+# Copy go.mod and go.sum first
 COPY go.mod .
+COPY go.sum .
 
-COPY taskAPI/go.sum .
-
-# Download all dependencies
+# Download dependencies
 RUN go mod download -x
 
-# ----- COPY + RUN -----
+# Install Air (live reload tool)
+RUN go install github.com/air-verse/air@latest
 
-# Copy the source from the current directory to the container
-COPY taskAPI/ .
+# Copy the rest of the application
+COPY . .
 
-# Install 'air' live-reload go module
-RUN go get -u github.com/cosmtrek/air
+# Expose the app port
+EXPOSE 8000
 
-# Use the excutable
-ENTRYPOINT ["/go/bin/air"]
+# Start the hot reload server
+CMD ["air"]
