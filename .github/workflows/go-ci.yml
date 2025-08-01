@@ -2,31 +2,31 @@ name: Lint, Build & Tests - Go
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, dev ]
     paths:
       - 'taskAPI/**'
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, dev ]
 
 jobs:
-
   build-backend:
     name: Build
     runs-on: ubuntu-latest
     env:
       GO111MODULE: on
     strategy:
-      matrix: { dir: [ "./taskAPI" ] }
+      matrix:
+        dir: [ "./taskAPI" ]
 
     steps:
       - name: Set up Go 1.24
-        uses: actions/setup-go@v1
+        uses: actions/setup-go@v4
         with:
           go-version: 1.24
         id: go
 
-      - name: Check out code into the Go module directory
-        uses: actions/checkout@v2
+      - name: Check out code
+        uses: actions/checkout@v3
 
       - name: Lint with golangci
         uses: golangci/golangci-lint-action@v2.5.2
@@ -34,21 +34,15 @@ jobs:
           working-directory: ${{ matrix.dir }}
           skip-go-installation: true
 
-      - name: Get dependencies
+      - name: Download dependencies
         working-directory: ${{ matrix.dir }}
-        run: |
-          go get -v -t -d ./...
-          if [ -f Gopkg.toml ]; then
-              curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-              dep ensure
-          fi
+        run: go mod download
 
       - name: Build
         working-directory: ${{ matrix.dir }}
         run: go build -v .
 
-      # Add it when tests will be written
+      # Uncomment when tests are available
       #- name: Test
-      #  working-directory: ./back
-      #  run: go test -v ./test
-
+      #  working-directory: ${{ matrix.dir }}
+      #  run: go test -v ./...
