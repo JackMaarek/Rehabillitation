@@ -27,11 +27,11 @@ func Run(r *gin.Engine) {
 
 	go func() {
 		if err := r.Run(fmt.Sprintf(":%s", handlers.GetVariable("PORT"))); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
+			log.Fatalf("Fatal error, could not initialize router : %s\n", err)
 		}
 	}()
 
-	// ----------------- CLOSE APP -----------------
+	// ----------------- CLOSE APP IF SIGINT SIGNAL -----------------
 	quit := make(chan os.Signal, 2)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
